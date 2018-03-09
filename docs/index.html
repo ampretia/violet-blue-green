@@ -16,7 +16,7 @@
       <nav class="navbar">
         <div class="container">
           <div class="navbar-brand">
-           
+
             <span class="navbar-burger burger" data-target="navbarMenuHeroA">
               <span></span>
               <span></span>
@@ -26,17 +26,17 @@
           <div id="navbarMenuHeroA" class="navbar-menu">
             <div class="navbar-end">
               <a class="navbar-item is-active" href="https://github.com/hyperledger/composer">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    Hyperledger Composer
-    
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                Hyperledger Composer
+
               </a>
               <a class="navbar-item" href="https://github.com/ampretia/violet-blue-green">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  This site
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                This site
               </a>
 
               <!-- <span class="navbar-item">
@@ -70,36 +70,39 @@
           <article class="message is-dark">
             <div class="message-body">
               <p>
-              The classic game of Tic-Tac-Toe or Noughts and Crosses. But with a Blocky feel. The Blue and Green are keen players
-              but being blocks, they need to know there's an immutable record of all games that is the source of the true result.
+                The classic game of <b>Tic-Tac-Toe</b> or <b>Noughts and Crosses</b>. But with a Blocky feel.
+                </p>
+                <br/>
+                <p>Blue and Green are keen players but being
+                blocks, they need to know there's an immutable record of all games that is the source of the true result.
+                Having got a <a href="">bit chilly recently</a>, Blue could do with some help playing. So you'll be playing for Blue.
               </p>
-
+              <br/>
               <p>
-                The result of each game is stoed in a Hyperledger Composer network. We'll need a name to store the result on.  
-              </p>
-              
-              <p>
-                  <a class="button is-link is-outlined" id="btn-reset">Reset game</a>
+                The result of each game is stoed in a Hyperledger Composer network. We'll need a name to store the result on.
               </p>
             </div>
           </article>
-          <article class="message is-info" id="draw" style="display: none;">
+          <article class="message is-info" id="youdraw" style="display: none;">
             <div class="message-body">
-              It was a draw!!
+             <p class="has-text-weight-bold"> It was a draw!!</p>
             </div>
           </article>
 
           <article class="message is-success" id="youwin" style="display: none;">
             <div class="message-body">
-              You won!
+              <p class="has-text-weight-bold">You won!!</p>
             </div>
           </article>
 
           <article class="message is-warning" id="youloose" style="display: none;">
             <div class="message-body">
-              You lost :-(
+                <p class="has-text-weight-bold">You lost :-(</p>
             </div>
           </article>
+
+
+
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">Name</label>
@@ -112,29 +115,44 @@
               </div>
             </div>
           </div>
+
+          <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <!-- -->
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <p class="control">
+                      <a class="button is-link is-outlined" id="btn-reset">Reset to Play again!</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+
         </div>
 
 
         <div class="column">
 
-            <div class="box" id="game">
-              <div class="row columns is-mobile is-centered" id="0">
-                <span class="cell column" id="0x0"></span>
-                <span class="cell column" id="1x0"></span>
-                <span class="cell column" id="2x0"></span>
-              </div>
-              <div class="row columns is-mobile is-centered" id="2">
-                <span class="cell column" id="0x1"></span>
-                <span class="cell column" id="1x1"></span>
-                <span class="cell column" id="2x1"></span>
-              </div>
-              <div class="row columns is-mobile is-centered" id="3">
-                <span class="cell column" id="0x2"></span>
-                <span class="cell column" id="1x2"></span>
-                <span class="cell column" id="2x2"></span>
-              </div>
+          <div class="box" id="game">
+            <div class="row columns is-mobile is-centered" id="0">
+              <span class="cell column" id="0x0"></span>
+              <span class="cell column" id="1x0"></span>
+              <span class="cell column" id="2x0"></span>
             </div>
-          
+            <div class="row columns is-mobile is-centered" id="2">
+              <span class="cell column" id="0x1"></span>
+              <span class="cell column" id="1x1"></span>
+              <span class="cell column" id="2x1"></span>
+            </div>
+            <div class="row columns is-mobile is-centered" id="3">
+              <span class="cell column" id="0x2"></span>
+              <span class="cell column" id="1x2"></span>
+              <span class="cell column" id="2x2"></span>
+            </div>
+          </div>
+
 
         </div>
 

@@ -30,10 +30,10 @@ module.exports = {
     devtool: 'inline-source-map',
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'docs')
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(['docs']),
         new CopyWebpackPlugin([ { from: 'src/pages/**/*' , flatten:true} ], {})
     ],
     module: {

@@ -17,173 +17,165 @@ limitations under the License.
 'use strict';
 require('bulma/css/bulma.css');
 require('animate.css/animate.css');
+
+
 const axios = require('axios');
 const req = axios.create({
-    baseURL: 'http://localhost:8641/'
+    baseURL: 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/markedwards%40ampretia.co.uk_dev/Ampretia/'
 });
+
+let hash = require('hash.js');
 const faker = require('faker');
 const __r = require('rowinia');
-import BlankBlock from './BlankBlock.png';
-import GreenBlock from './GreenBlock.png';
-import BlueBlock from './BlueBlock.png';
 
-let board={ '0x0':{c:''},'1x0':{c:''},'2x0':{c:''},
-            '0x1':{c:''},'1x1':{c:''},'2x1':{c:''},
-            '0x2':{c:''},'1x2':{c:''},'2x2':{c:''}};
-let keys;
+const BlankBlock = require('./BlankBlock.png');
+const GreenBlock  = require( './GreenBlock.png');
+const BlueBlock  = require( './BlueBlock.png');
 
+const Board = require('./board.js');
+
+let b;
+let h;
+
+async function send(result){
+    try{
+        let res = await req.post('Event.json',result);
+        console.log(res.data);
+    } catch(err){
+        console.log(err);
+    }
+}
+
+async function handleResult(result){
+
+    console.log(result);
+
+    let line = result.line;
+
+    removeBoardEvent();
+    if (result.result==='win'){
+        __r.addClass(line[0].id.view,'animated');
+        __r.addClass(line[0].id.view,'bounce');
+        __r.addClass(line[1].id.view,'animated');
+        __r.addClass(line[1].id.view,'bounce');
+        __r.addClass(line[2].id.view,'animated');
+        __r.addClass(line[2].id.view,'bounce');
+
+        if (result.who === 'blue'){
+            __r.show(__r.e('#youwin'),'');
+            await send(result);
+        } else {
+            __r.show(__r.e('#youloose'),'');
+            await send(result);
+        }
+    } else {
+        __r.show(__r.e('#youdraw'),'');
+        await send(result);
+    }
+
+
+}
+/**
+ * Rest the board back to a starting state, each cell set to blank
+ */
 function resetBoard(){
     // get all the elements and set the blank block
-    var list = document.getElementsByClassName('cell');
-
+    let list = __r.el('.cell');
+    let el = [ [],[],[] ];
     // iterate over elements and output their HTML content
-    for (var i = 0; i < list.length; i++) {
+    for (let i = 0; i < list.length; i++) {
         // Add the image to our existing div.
-        var myIcon = new Image();
+        let myIcon = new Image();
         myIcon.src = BlankBlock;
         myIcon.width = 150;
         myIcon.height = 150;
 
         list[i].innerHTML = '';
-        list[i].appendChild(myIcon)
-        
+        list[i].appendChild(myIcon);
+
+        // add the click event which is to select pressed block
         __r.espond(list[i],'click',pick);
-        board[list[i].id].c='';
-        board[list[i].id].img=myIcon;
+
+        let coords=list[i].id.split('x');
+        el[coords[0]][coords[1]] = myIcon;
+
+    }
+
+    b = new Board(el);
+    b.setResultCallback(Board.BLUE,handleResult);
+    b.setResultCallback(Board.GREEN,function(){console.log('Computer won!!!');});
+    b.setMoveCallback(Board.BLUE,function(){console.log('Computer is waiting...');});
+    b.setMoveCallback(Board.GREEN,()=>{
+        console.log('Thinking...');
+        let m = b.getValidMoves();
+        let i = Math.floor(Math.random()*m.length);
+
+        console.log(m[i]);
+        m[i].id.view.src =GreenBlock;
+        b.makeMove({'x':m[i].x,'y':m[i].y,id:{'c':Board.GREEN}});
+
+    });
+
+    // hide any of the result boxes
+    __r.hide(__r.e('#youwin'));
+    __r.hide(__r.e('#youdraw'));
+    __r.hide(__r.e('#youloose'));
+
+}
+
+/**
+ * Quick helper function to make sure that the click events have been removed from the board
+ */
+function removeBoardEvent(){
+    // get all the elements and set the blank block
+    let list = __r.el('.cell');
+
+    // iterate over elements and output their HTML content
+    for (let i = 0; i < list.length; i++) {
+        __r.emove(list[i],'click',pick);
     }
 }
 
-function hide(el) {
-    el.style.display = 'none';
-}
 
-function show(el, value) {
-    el.style.display = value;
-}
 
-function checkWin(){
+/**
+ * Has the player won or lost?
+ */
 
-    if (board['0x0'].c !== '' && board['0x0'].c === board['1x1'].c && board['1x1'].c === board['2x2'].c ){
-        console.log(board['0x0'].c + 'win diagnal' );
-        __r.addClass(board['0x0'].img,'animated');
-        __r.addClass(board['0x0'].img,'bounce');
-        __r.addClass(board['1x1'].img,'animated');
-        __r.addClass(board['1x1'].img,'bounce');
-        __r.addClass(board['2x2'].img,'animated');
-        __r.addClass(board['2x2'].img,'bounce');   
-        if (board['0x0'].c=='blue'){
-            show(document.getElementById('youwin'),'');
-        } else {
-            show(document.getElementById('youloose'),'');
-        }
-    }
-    if (board['0x2'].c !== '' && board['0x2'].c === board['1x1'].c && board['1x1'].c === board['2x0'].c ){
-        console.log(board['0x2'].c + 'win diagnal' );
-        __r.addClass(board['0x2'].img,'animated');
-        __r.addClass(board['0x2'].img,'bounce');
-        __r.addClass(board['1x1'].img,'animated');
-        __r.addClass(board['1x1'].img,'bounce');
-        __r.addClass(board['2x0'].img,'animated');
-        __r.addClass(board['2x0'].img,'bounce');   
-        if (board['0x2'].c=='blue'){
-            show(document.getElementById('youwin'),'');
-        } else {
-            show(document.getElementById('youloose'),'');
-        }
-    }
 
-    for (let x=0; x<3; x++){
-        let k0 = `${x}x0`;
-        let k1 = `${x}x1`;
-        let k2 = `${x}x2`;
-
-        if (board[k0].c !== '' && board[k0].c === board[k1].c && board[k1].c === board[k2].c ){
-            console.log(board[k0].c + 'win on row'+x );
-            __r.addClass(board[k0].img,'animated');
-            __r.addClass(board[k0].img,'bounce');
-            __r.addClass(board[k1].img,'animated');
-            __r.addClass(board[k1].img,'bounce');
-            __r.addClass(board[k2].img,'animated');
-            __r.addClass(board[k2].img,'bounce');            
-            if (board[k0].c=='blue'){
-                show(document.getElementById('youwin'),'');
-            } else {
-                show(document.getElementById('youloose'),'');
-            }
-        }
-    }
-
-    for (let y=0; y<3; y++){
-        let l0 = `0x${y}`;
-        let l1 = `1x${y}`;
-        let l2 = `2x${y}`;
-
-        if (board[l0].c !== '' && board[l0].c === board[l1].c && board[l1].c === board[l2].c ){
-            console.log(board[l0].c + 'win on column'+y );
-            __r.addClass(board[l0].img,'animated');
-            __r.addClass(board[l0].img,'bounce');
-            __r.addClass(board[l1].img,'animated');
-            __r.addClass(board[l1].img,'bounce');            
-            __r.addClass(board[l2].img,'animated');
-            __r.addClass(board[l2].img,'bounce');  
-            if (board[l0].c=='blue'){
-                show(document.getElementById('youwin'),'');
-            } else {
-                show(document.getElementById('youloose'),'');
-            }
-        }
-    }    
-}
-
-function pick(e){
-    console.log(board);
+async function pick(e){
 
     let id = e.srcElement.parentElement.id;
-    if (board[id].c === ''){
+    let coords = id.split('x');
+    let move = {x:coords[0],y:coords[1],id:{c:Board.BLUE} };
+    if (b.isMoveValid(move))
+    {
         e.srcElement.src = BlueBlock;
-        board[id].c = 'blue';
-
-        checkWin();
-
-        keys.splice(keys.indexOf(id),1);
-        console.log(keys);
-
-        if (keys.length===0){
-            show(document.getElementById('draw'),'');
-            return;
-        }
-         // pick somewhere are random for other block to go
-        let i = Math.floor(Math.random() * (keys.length));
-        let place = keys[i];
-        keys.splice(i,1);        
-
-        
-        console.log(`Chosen to put somewhere at ${board[place]} `);
-        board[place].img.src =GreenBlock;
-        board[place].c='green';
-
-        checkWin();
+        b.makeMove(move);
 
     } else {
-        console.log('no')
+        console.log('no');
     }
 
 }
+
 
 /**
  * Main function to display the interface
  */
 function run() {
+    // addEvent(document.getElementById('btn-reset'),'click',resetBoard);
 
+    __r.espond(__r.e('#btn-reset'),'click',()=>{
+        resetBoard();
+        b.start(Board.BLUE);
+    });
+    let name = faker.name.findName();
+    h = hash.sha256().update(name).digest('hex');
+
+    __r.e('#ip-name').value=name;
     resetBoard();
-
-    keys = Object.keys(board);
-
-    __r.espond(document.getElementById('btn-reset'),'click',resetBoard);
-
-
-    document.getElementById('ip-name').value=faker.name.findName();
-
+    b.start(Board.BLUE);
 }
 
 // when page is ready display the upload
