@@ -21,7 +21,7 @@ require('animate.css/animate.css');
 
 const axios = require('axios');
 const req = axios.create({
-    baseURL: 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/markedwards%40ampretia.co.uk_dev/Ampretia/'
+    baseURL: 'https://openwhisk.eu-gb.bluemix.net/api/v1/web/markedwards%40ampretia.co.uk_dev/Ampretia/Violet-Blue-Green%20to%20db.json'
 });
 
 let hash = require('hash.js');
@@ -39,7 +39,11 @@ let h;
 
 async function send(result){
     try{
-        let res = await req.post('Event.json',result);
+        console.log(JSON.stringify(result));
+        result.id = h;
+        let payload = { result};
+
+        let res = await req.post('',payload);
         console.log(res.data);
     } catch(err){
         console.log(err);

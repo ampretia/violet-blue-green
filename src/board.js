@@ -22,8 +22,15 @@ class Board {
         for (let y=0; y<3; y++){
             for (let x=0; x<3; x++){
                 let s = this.board[x][y].id.c;
-                s = chalk.green(_.padEnd(s));
-                op[x][y]=`[${x}:${y}] ${(this.board[x][y]).id.c}`;
+                if (s==='green'){
+                    s = chalk.green(_.padEnd(s,6));
+                } else if (s==='blue'){
+                    s = chalk.blue(_.padEnd(s,6));
+                } else {
+                    s = _.padEnd(s,6);
+                }
+
+                op[x][y]=`[${x},${y}] ${s}`;
             }
         }
         return table(op);
@@ -50,7 +57,7 @@ class Board {
                 this.resultCallbacks[Board.GREEN](r);
                 this.resultCallbacks[Board.BLUE](r);
             } else {
-                console.log(this.playerToMove);
+                // console.log(this.playerToMove);
 
                 if(this.playerToMove===Board.GREEN) {
                     this.playerToMove= Board.BLUE;
@@ -86,6 +93,10 @@ class Board {
         }
     }
 
+    getCell(x,y){
+        return this.board[x][y];
+    }
+
     checkResultForWin(){
         // diagonals
         let line = [];
@@ -106,7 +117,7 @@ class Board {
             let r = this._checkLine(line[l]);
             if (r === 'win' ){
                 retval.result =  'win';
-                console.log(line[l]);
+                // console.log(line[l]);
                 retval.who = line[l][0].id.c;
                 retval.line = line[l];
                 break;
